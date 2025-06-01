@@ -1,26 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Prayer Times</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prayer Times by Location</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #015374ce;
+      background: #f4f4f4;
       color: #333;
       text-align: center;
       padding: 2rem;
     }
-    h1 {
+    .site-title {
+      font-size: 2rem;
+      color: #1e3799;
+    }
+    h2 {
       color: #2c3e50;
     }
-    .prayer-times {
+    .date-box {
+      margin: 1rem auto 2rem;
+      background: #fff3cd;
+      padding: 1rem;
       display: inline-block;
-      background: white;
-      padding: 2rem;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      font-size: 1.1rem;
+    }
+    .prayer-times {
+      background: white;
+      display: inline-block;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1rem;
     }
     .prayer {
       margin: 1rem 0;
@@ -30,21 +44,90 @@
       font-weight: bold;
       color: #27ae60;
     }
+    .jummah {
+      background: #d1ecf1;
+      border: 1px solid #bee5eb;
+      color: #0c5460;
+      padding: 1rem;
+      border-radius: 10px;
+      display: inline-block;
+      margin-top: 1rem;
+
+      display: block;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 <body>
-  
-  <h1 class="site-title">Pakistanisch-Deutsches Kulturzentrum Regensburg e.V.(Bilal Mosque )</h1>
 
-  <h1>Today's Prayer Times</h1>
+  <h1 class="site-title">Pakistanisch-Deutsches Kulturzentrum Regensburg e.V.(Bilal Mosque)b</h1>
+  <div class="date-box" id="date-box">Loading date...</div>
+  <h2>Prayer Times</h2>
 
   <div class="prayer-times">
-    <div class="prayer">Fajr: <span class="time">04:30 AM</span></div>
-    <div class="prayer">Dhuhr: <span class="time">12:15 PM</span></div>
-    <div class="prayer">Asr: <span class="time">03:45 PM</span></div>
-    <div class="prayer">Maghrib: <span class="time">06:30 PM</span></div>
-    <div class="prayer">Isha: <span class="time">08:00 PM</span></div>
+    <div class="prayer">Fajr: <span class="time" id="fajr">Loading...</span></div>
+    <div class="prayer">Dhuhr: <span class="time" id="dhuhr">Loading...</span></div>
+    <div class="prayer">Asr: <span class="time" id="asr">Loading...</span></div>
+    <div class="prayer">Maghrib: <span class="time" id="maghrib">Loading...</span></div>
+    <div class="prayer">Isha: <span class="time" id="isha">Loading...</span></div>
   </div>
+
+  <!-- Jummah section (will show if it's Friday) -->
+  <div class="jummah" id="jummah-time" style="display: none;">
+    🕌 Jummah Prayer Time: <span class="time" id="jummah">01:30 PM</span>
+  </div>
+
+  <script>
+    async function fetchPrayerTimes(lat, lon) {
+      try {
+        const response = await fetch(
+          `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`
+        );
+        const data = await response.json();
+        const t = data.data.timings;
+
+        document.getElementById('fajr').textContent = t.Fajr;
+        document.getElementById('dhuhr').textContent = t.Dhuhr;
+        document.getElementById('asr').textContent = t.Asr;
+        document.getElementById('maghrib').textContent = t.Maghrib;
+        document.getElementById('isha').textContent = t.Isha;
+
+        // Update Date Section (Gregorian and Hijri)
+        const gDate = data.data.date.gregorian;
+        const hDate = data.data.date.hijri;
+        document.getElementById('date-box').innerHTML = `
+          📅 Gregorian: ${gDate.weekday.en}, ${gDate.date}<br>
+          🕋 Hijri: ${hDate.weekday.en}, ${hDate.date} (${hDate.month.en})
+        `;
+
+      //shows friday prayer time 
+        document.getElementById('jummah-time').style.display = 'inline-block';
+
+      } catch (err) {
+        console.error("Error fetching prayer times:", err);
+      }
+    }
+
+    // Geolocation to get user's location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          fetchPrayerTimes(lat, lon);
+        },
+        error => {
+          // fallback to Karachi
+          fetchPrayerTimes(24.8607, 67.0011);
+        }
+      );
+    } else {
+      // fallback if unsupported
+      fetchPrayerTimes(24.8607, 67.0011);
+    }
+  </script>
 
 </body>
 </html>
