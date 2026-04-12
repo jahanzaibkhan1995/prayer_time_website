@@ -29,8 +29,8 @@ jobs:
 
       - name: Check HTML files
         run: |
-          if [ ! -f index.html ]; then
-            echo "Missing index.html"
+          if [ ! -f indexadmin.html ]; then
+            echo "Missing indexadmin.html"
             exit 1
           fi
 
