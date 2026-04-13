@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bilal Mosque – Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f1f45;
+      --navy2: #1a2e5a;
+      --gold: #c9a84c;
+      --teal: #1a6b5a;
+      --cream: #fdf8f0;
+      --bg: #f4f6fa;
+      --card: #ffffff;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --red: #dc2626;
+      --green: #16a34a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: var(--bg); min-height: 100vh; }
+
+    /* Login Screen */
+    #login-screen {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(160deg, #0a1530, #0f2050);
+      padding: 1rem;
+    }
+    .login-box {
+      background: white; border-radius: 24px;
+      padding: 2.5rem 2rem; width: 100%; max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+    .login-box .logo { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .login-box h2 { color: var(--navy); font-size: 1.3rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .login-box p { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.75rem; }
+    .field { margin-bottom: 1rem; text-align: left; }
+    .field label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text); margin-bottom: 5px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .field input {
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 0.95rem; font-family: inherit;
+      color: var(--text); background: var(--bg);
+      transition: border-color 0.2s;
+    }
+    .field input:focus { outline: none; border-color: var(--navy); }
+    .btn-login {
+      width: 100%; padding: 13px;
+      background: var(--navy); color: white;
+      border: none; border-radius: 10px;
+      font-family: inherit; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: background 0.2s;
+      margin-top: 0.5rem;
+    }
+    .btn-login:hover { background: var(--navy2); }
+    .login-err { color: var(--red); font-size: 0.85rem; margin-top: 0.75rem; min-height: 1.2em; }
+
+    /* Admin Dashboard */
+    #admin-screen { display: none; }
+    .topbar {
+      background: var(--navy);
+      padding: 1rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .topbar-title { color: white; font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+    .btn-logout {
+      background: rgba(255,255,255,0.1); color: white;
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+      padding: 6px 16px; font-family: inherit; font-size: 0.85rem;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.2); }
+
+    .dashboard { max-width: 640px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+    .card {
+      background: var(--card); border-radius: 18px;
+      border: 1px solid var(--border);
+      padding: 1.5rem; margin-bottom: 1.25rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .card-title {
+      font-size: 1rem; font-weight: 800; color: var(--navy);
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 1.25rem; padding-bottom: 0.75rem;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    /* Field rows */
+    .field-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .field-row label { font-size: 0.85rem; font-weight: 700; color: var(--muted); min-width: 80px; }
+    .field-row input[type="time"],
+    .field-row input[type="text"] {
+      flex: 1; padding: 9px 12px;
+      border: 1.5px solid var(--border); border-radius: 9px;
+      font-size: 0.9rem; font-family: inherit; color: var(--text);
+      background: var(--bg); transition: border-color 0.2s;
+    }
+    .field-row input:focus { outline: none; border-color: var(--teal); }
+
+    /* Editable list rows */
+    .edit-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .edit-row input {
+      flex: 1; padding: 9px 12px;
+      border: 1.5px solid var(--border); border-radius: 9px;
+      font-size: 0.9rem; font-family: inherit; color: var(--text);
+      background: var(--bg); transition: border-color 0.2s;
+    }
+    .edit-row input:focus { outline: none; border-color: var(--teal); }
+    .btn-remove {
+      background: #fee2e2; color: var(--red);
+      border: none; border-radius: 8px;
+      padding: 8px 14px; cursor: pointer;
+      font-size: 0.8rem; font-weight: 700; font-family: inherit;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-add {
+      background: var(--bg); border: 1.5px dashed var(--border);
+      border-radius: 9px; padding: 9px 16px;
+      font-size: 0.85rem; font-family: inherit; color: var(--muted);
+      cursor: pointer; width: 100%; margin-top: 4px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-add:hover { border-color: var(--teal); color: var(--teal); }
+
+    /* Save button */
+    .save-row { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .btn-save {
+      background: var(--teal); color: white;
+      border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-save:hover { background: #145045; }
+    .saved-msg {
+      color: var(--green); font-size: 0.85rem; font-weight: 700;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .saved-msg.show { opacity: 1; }
+
+    /* Info banner */
+    .info-banner {
+      background: #eff6ff; border: 1px solid #bfdbfe;
+      border-radius: 12px; padding: 0.9rem 1rem;
+      font-size: 0.85rem; color: #1e40af;
+      display: flex; gap: 10px; align-items: flex-start;
+      margin-bottom: 1.25rem;
+    }
+    .info-banner .icon { flex-shrink: 0; font-size: 1rem; }
+
+    /* Note about overrides */
+    .hint { font-size: 0.78rem; color: var(--muted); margin-top: 4px; font-style: italic; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="logo">🕌</div>
+    <h2>Admin Panel</h2>
+    <p>Bilal Mosque — Regensburg</p>
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="login-user" placeholder="Enter username" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="Enter password" />
+    </div>
+    <button class="btn-login" onclick="doLogin()">Login</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div id="admin-screen">
+  <div class="topbar">
+    <div class="topbar-title">🕌 Bilal Mosque Admin</div>
+    <button class="btn-logout" onclick="doLogout()">Logout</button>
+  </div>
+
+  <div class="dashboard">
+
+    <div class="info-banner">
+      <span class="icon">ℹ️</span>
+      <span>Changes saved here will appear on the <strong>main page (index.html)</strong> automatically. Prayer time overrides replace the auto-fetched times.</span>
+    </div>
+
+    <!-- Prayer Time Overrides -->
+    <div class="card">
+      <div class="card-title">🕐 Prayer Time Overrides</div>
+      <p class="hint" style="margin-bottom:1rem;">Leave blank to use automatically fetched times from the API.</p>
+      <div class="field-row"><label>Fajr</label><input type="time" id="a-fajr" /></div>
+      <div class="field-row"><label>Dhuhr</label><input type="time" id="a-dhuhr" /></div>
+      <div class="field-row"><label>Asr</label><input type="time" id="a-asr" /></div>
+      <div class="field-row"><label>Maghrib</label><input type="time" id="a-maghrib" /></div>
+      <div class="field-row"><label>Isha</label><input type="time" id="a-isha" /></div>
+      <div class="save-row">
+        <span class="saved-msg" id="msg-prayers">✓ Saved!</span>
+        <button class="btn-save" onclick="savePrayers()">Save Prayer Times</button>
+      </div>
+    </div>
+
+    <!-- Jummah Times -->
+    <div class="card">
+      <div class="card-title">🕌 Jummah Prayer Times</div>
+      <div id="jummah-editor"></div>
+      <button class="btn-add" onclick="addJummah()">+ Add Jummah Time</button>
+      <div class="save-row">
+        <span class="saved-msg" id="msg-jummah">✓ Saved!</span>
+        <button class="btn-save" onclick="saveJummah()">Save Jummah Times</button>
+      </div>
+    </div>
+
+    <!-- Announcements -->
+    <div class="card">
+      <div class="card-title">📢 Announcements</div>
+      <div id="ann-editor"></div>
+      <button class="btn-add" onclick="addAnn()">+ Add Announcement</button>
+      <div class="save-row">
+        <span class="saved-msg" id="msg-ann">✓ Saved!</span>
+        <button class="btn-save" onclick="saveAnns()">Save Announcements</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const ADMIN_USER = 'admin';
+  const ADMIN_PASS = 'mosque123';
+  const STORAGE_KEY = 'mosque_data';
+
+  function getData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch(e) { return {}; }
+  }
+
+  function setData(d) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  }
+
+  function doLogin() {
+    const u = document.getElementById('login-user').value.trim();
+    const p = document.getElementById('login-pass').value;
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-screen').style.display = 'block';
+      loadAdminFields();
+    } else {
+      document.getElementById('login-err').textContent = 'Incorrect username or password.';
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') {
+      doLogin();
+    }
+  });
+
+  function doLogout() {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('admin-screen').style.display = 'none';
+    document.getElementById('login-user').value = '';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-err').textContent = '';
+  }
+
+  function convertTo24(t) {
+    if (!t || !t.includes(' ')) return t;
+    const [time, mod] = t.split(' ');
+    let [h, m] = time.split(':');
+    h = parseInt(h);
+    if (mod === 'PM' && h !== 12) h += 12;
+    if (mod === 'AM' && h === 12) h = 0;
+    return String(h).padStart(2,'0') + ':' + m;
+  }
+
+  function convertTo12(t) {
+    if (!t) return '';
+    const [h, m] = t.split(':');
+    let hour = parseInt(h);
+    const mod = hour >= 12 ? 'PM' : 'AM';
+    if (hour > 12) hour -= 12;
+    if (hour === 0) hour = 12;
+    return String(hour).padStart(2,'0') + ':' + m + ' ' + mod;
+  }
+
+  function loadAdminFields() {
+    const d = getData();
+    const overrides = d.prayerOverride || {};
+    ['fajr','dhuhr','asr','maghrib','isha'].forEach(n => {
+      const val = overrides[n] ? convertTo24(overrides[n]) : '';
+      document.getElementById('a-' + n).value = val;
+    });
+
+    const jummahTimes = d.jummahTimes || ['01:30 PM', '03:00 PM'];
+    renderJummahEditor(jummahTimes);
+
+    const anns = d.announcements || [
+      'Jummah Khutbah starts at 1:15 PM every Friday.',
+      'Quran classes for kids every Saturday at 10 AM.',
+      'Special Eid prayer will be announced soon.'
+    ];
+    renderAnnEditor(anns);
+  }
+
+  function savePrayers() {
+    const d = getData();
+    d.prayerOverride = {};
+    ['fajr','dhuhr','asr','maghrib','isha'].forEach(n => {
+      const val = document.getElementById('a-' + n).value;
+      if (val) d.prayerOverride[n] = convertTo12(val);
+    });
+    setData(d);
+    flash('msg-prayers');
+  }
+
+  // Jummah editor
+  let jummahList = [];
+
+  function renderJummahEditor(times) {
+    jummahList = times ? [...times] : [];
+    const c = document.getElementById('jummah-editor');
+    c.innerHTML = '';
+    jummahList.forEach((t, i) => {
+      const row = document.createElement('div');
+      row.className = 'edit-row';
+      row.innerHTML = `<input type="text" id="j-${i}" value="${t}" placeholder="e.g. 01:30 PM" /><button class="btn-remove" onclick="removeJummah(${i})">Remove</button>`;
+      c.appendChild(row);
+    });
+  }
+
+  function addJummah() {
+    collectJummah();
+    jummahList.push('');
+    renderJummahEditor(jummahList);
+    setTimeout(() => document.getElementById('j-' + (jummahList.length-1)).focus(), 50);
+  }
+
+  function removeJummah(i) {
+    collectJummah();
+    jummahList.splice(i, 1);
+    renderJummahEditor(jummahList);
+  }
+
+  function collectJummah() {
+    jummahList = jummahList.map((_, i) => {
+      const el = document.getElementById('j-' + i);
+      return el ? el.value.trim() : '';
+    });
+  }
+
+  function saveJummah() {
+    collectJummah();
+    const d = getData();
+    d.jummahTimes = jummahList.filter(t => t);
+    setData(d);
+    renderJummahEditor(d.jummahTimes);
+    flash('msg-jummah');
+  }
+
+  // Announcements editor
+  let annList = [];
+
+  function renderAnnEditor(anns) {
+    annList = anns ? [...anns] : [];
+    const c = document.getElementById('ann-editor');
+    c.innerHTML = '';
+    annList.forEach((a, i) => {
+      const row = document.createElement('div');
+      row.className = 'edit-row';
+      row.innerHTML = `<input type="text" id="an-${i}" value="${a.replace(/"/g,'&quot;')}" placeholder="Announcement text..." /><button class="btn-remove" onclick="removeAnn(${i})">Remove</button>`;
+      c.appendChild(row);
+    });
+  }
+
+  function addAnn() {
+    collectAnns();
+    annList.push('');
+    renderAnnEditor(annList);
+    setTimeout(() => document.getElementById('an-' + (annList.length-1)).focus(), 50);
+  }
+
+  function removeAnn(i) {
+    collectAnns();
+    annList.splice(i, 1);
+    renderAnnEditor(annList);
+  }
+
+  function collectAnns() {
+    annList = annList.map((_, i) => {
+      const el = document.getElementById('an-' + i);
+      return el ? el.value.trim() : '';
+    });
+  }
+
+  function saveAnns() {
+    collectAnns();
+    const d = getData();
+    d.announcements = annList.filter(a => a);
+    setData(d);
+    renderAnnEditor(d.announcements);
+    flash('msg-ann');
+  }
+
+  function flash(id) {
+    const el = document.getElementById(id);
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>
