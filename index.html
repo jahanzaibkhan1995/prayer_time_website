@@ -3,125 +3,353 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mosque Portal</title>
+  <title>Bilal Mosque – Prayer Times</title>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --navy: #0f1f45;
+      --gold: #c9a84c;
+      --gold-light: #f0d080;
+      --teal: #1a6b5a;
+      --teal-light: #d0ede8;
+      --cream: #fdf8f0;
+      --card-bg: #ffffff;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
+      font-family: 'Nunito', sans-serif;
+      background: var(--navy);
+      min-height: 100vh;
+      padding: 0 0 3rem;
+    }
+    /* Header */
+    .header {
+      background: linear-gradient(160deg, #0a1530 0%, #0f2050 60%, #163060 100%);
+      padding: 2.5rem 1.5rem 3rem;
       text-align: center;
-      padding: 2rem;
+      position: relative;
+      overflow: hidden;
     }
-
-    .site-title {
-      font-size: 2rem;
-      color: #1e3799;
-      margin-bottom: 1rem;
+    .header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.05'%3E%3Cpath d='M30 0l5 10h10l-8 6 3 10-10-7-10 7 3-10-8-6h10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.6;
     }
-
-    .role-select {
-      margin-bottom: 1.5rem;
-    }
-
-    select {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    .section {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 10px;
-      max-width: 600px;
-      margin: 0 auto 1.5rem;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      text-align: left;
-    }
-
-    h2 {
-      color: #2c3e50;
-      margin-top: 0;
-    }
-
-    .hidden {
-      display: none;
-    }
-    .admin-panel {
-      background: #fefefe;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 1rem 1.5rem;
-      margin-top: 1rem;
-      box-shadow: 0 0 8px rgba(0,0,0,0.05);
-    }
-    .admin-panel h3 {
-      margin-top: 0;
-      color: #1e3799;
-      font-size: 1.25rem;
-    }
-    .admin-actions {
-      list-style: none;
-      padding-left: 0;
-      margin: 0.5rem 0 0 0;
-      text-align: left;
-    }
-    .admin-actions li {
+    .mosque-icon {
+      font-size: 2.5rem;
+      display: block;
       margin-bottom: 0.5rem;
-      padding-left: 1.2rem;
+    }
+    .header h1 {
+      font-family: 'Amiri', serif;
+      color: var(--gold-light);
+      font-size: clamp(1.1rem, 4vw, 1.6rem);
+      font-weight: 700;
+      line-height: 1.4;
       position: relative;
     }
-    .admin-actions li::before {
-      content: "🔹";
-      position: absolute;
-      left: 0;
+    .header .arabic {
+      font-family: 'Amiri', serif;
+      color: var(--gold);
+      font-size: 1.5rem;
+      display: block;
+      margin-top: 0.5rem;
+      opacity: 0.9;
+    }
+    .gold-line {
+      width: 80px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 1rem auto 0;
+      position: relative;
+    }
+    /* Date box */
+    .container { max-width: 500px; margin: 0 auto; padding: 0 1rem; }
+    .date-card {
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      margin: -1.5rem auto 1.5rem;
+      max-width: 460px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      position: relative;
+    }
+    .date-card .greg { font-size: 0.95rem; color: var(--navy); font-weight: 700; }
+    .date-card .hijri { font-size: 0.85rem; color: var(--teal); margin-top: 4px; font-family: 'Amiri', serif; font-size: 1rem; }
+    /* Prayer times card */
+    .section-label {
+      color: var(--gold);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .prayers-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      margin-bottom: 1.25rem;
+    }
+    .prayers-card .card-header {
+      background: linear-gradient(135deg, var(--teal), #0d4a3a);
+      padding: 1rem 1.5rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .prayers-card .card-header span { color: white; font-weight: 700; font-size: 1rem; }
+    .prayer-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 1.5rem;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+    .prayer-row:last-child { border-bottom: none; }
+    .prayer-row.next-prayer { background: #fffbeb; }
+    .prayer-row.next-prayer .p-name { color: var(--teal); font-weight: 700; }
+    .prayer-row.next-prayer .p-time { color: var(--teal); }
+    .p-name { font-size: 1rem; color: var(--text); font-weight: 600; }
+    .p-dot { width: 8px; height: 8px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; }
+    .prayer-row.next-prayer .p-dot { background: var(--gold); }
+    .p-time { font-size: 1rem; font-weight: 700; color: #374151; font-variant-numeric: tabular-nums; }
+    .next-badge {
+      font-size: 0.65rem; font-weight: 700; background: var(--gold); color: white;
+      padding: 2px 8px; border-radius: 20px; margin-left: 8px; letter-spacing: 0.05em;
+    }
+    /* Jummah card */
+    .jummah-card {
+      background: linear-gradient(135deg, #1a3a6b, #0f2050);
+      border-radius: 20px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,168,76,0.3);
+    }
+    .jummah-card .card-header-text {
+      color: var(--gold-light); font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .jummah-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .jummah-row:last-child { border-bottom: none; }
+    .jummah-label { color: rgba(255,255,255,0.7); font-size: 0.9rem; }
+    .jummah-time-val { color: var(--gold-light); font-weight: 700; font-size: 0.95rem; }
+    /* Announcements */
+    .ann-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .ann-card .card-header {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 0.75rem;
+    }
+    .ann-card .card-header span { font-weight: 700; font-size: 1rem; color: var(--text); }
+    .ann-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 0.9rem; color: #374151; line-height: 1.5;
+    }
+    .ann-item:last-child { border-bottom: none; }
+    .ann-bullet { color: var(--gold); font-size: 1.2rem; line-height: 1.2; flex-shrink: 0; }
+    .no-ann { color: var(--muted); font-size: 0.9rem; font-style: italic; }
+    /* Footer */
+    .footer {
+      text-align: center; margin-top: 2rem;
+      color: rgba(255,255,255,0.25); font-size: 0.75rem;
     }
   </style>
 </head>
 <body>
 
-  <h1 class="site-title">Pakistanisch-Deutsches Kulturzentrum Regensburg e.V. (Bilal Mosque)</h1>
-
-  <!-- Role selector -->
-  <div class="role-select">
-    <label for="role">Select your role: </label>
-    <select id="role" onchange="switchRole()">
-      <option value="user">User</option>
-      <option value="owner">Owner</option>
-    </select>
+  <div class="header">
+    <span class="mosque-icon">🕌</span>
+    <h1>Pakistanisch-Deutsches Kulturzentrum<br>Regensburg e.V.</h1>
+    <span class="arabic">مسجد بلال</span>
+    <div class="gold-line"></div>
   </div>
 
-  <!-- User View -->
-  <div class="section" id="user-view">
-    <h2>Welcome, Visitor</h2>
-    <p>🕌 You can view today's prayer times, announcements, and upcoming events.</p>
-    <p>Feel free to explore and participate in community activities.</p>
+  <div class="container">
+    <div class="date-card" id="date-box">
+      <div class="greg">Loading date...</div>
+    </div>
+
+    <div class="prayers-card">
+      <div class="card-header">
+        <span>🕐 Prayer Times</span>
+      </div>
+      <div id="prayer-list">
+        <div class="prayer-row"><span class="p-name">Fajr</span><span class="p-dot"></span><span class="p-time" id="t-fajr">--:--</span></div>
+        <div class="prayer-row"><span class="p-name">Dhuhr</span><span class="p-dot"></span><span class="p-time" id="t-dhuhr">--:--</span></div>
+        <div class="prayer-row"><span class="p-name">Asr</span><span class="p-dot"></span><span class="p-time" id="t-asr">--:--</span></div>
+        <div class="prayer-row"><span class="p-name">Maghrib</span><span class="p-dot"></span><span class="p-time" id="t-maghrib">--:--</span></div>
+        <div class="prayer-row"><span class="p-name">Isha</span><span class="p-dot"></span><span class="p-time" id="t-isha">--:--</span></div>
+      </div>
+    </div>
+
+    <div class="jummah-card">
+      <div class="card-header-text">🕌 Jummah Prayer Times</div>
+      <div id="jummah-list"></div>
+    </div>
+
+    <div class="ann-card">
+      <div class="card-header">
+        <span>📢 Announcements</span>
+      </div>
+      <div id="ann-list"></div>
+    </div>
+
+    <div class="footer">Bilal Mosque · Regensburg</div>
   </div>
 
-  <!-- Owner/Admin View -->
-  <div class="admin-panel">
-  <h3>🛠️ Admin Tools</h3>
-    <ul class="admin-actions">
-       <li>🕒 Manage Prayer Times</li>
-       <li>📝 Edit Announcements</li>
-       <li>📅 Schedule Events</li>
-       <li>📂 View Donation Records</li>
-       <li>🧾 Check Registrations</li>
-       <li>📊 Access Internal Reports</li>
-    </ul>
-  </div>
+<script>
+  const STORAGE_KEY = 'mosque_data';
 
-  <script>
-    function switchRole() {
-      const role = document.getElementById('role').value;
-      document.getElementById('user-view').classList.toggle('hidden', role !== 'user');
-      document.getElementById('owner-view').classList.toggle('hidden', role !== 'owner');
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch(e) { return null; }
+  }
+
+  function renderJummah(times) {
+    const c = document.getElementById('jummah-list');
+    if (!times || !times.length) {
+      c.innerHTML = '<div class="jummah-row"><span class="jummah-label">No times set</span></div>';
+      return;
+    }
+    c.innerHTML = times.map((t, i) =>
+      `<div class="jummah-row">
+        <span class="jummah-label">Jummah ${times.length > 1 ? (i === 0 ? '1st' : i === 1 ? '2nd' : (i+1)+'th') + ' Khutbah' : 'Prayer'}</span>
+        <span class="jummah-time-val">${t}</span>
+      </div>`
+    ).join('');
+  }
+
+  function renderAnns(anns) {
+    const c = document.getElementById('ann-list');
+    if (!anns || !anns.length) {
+      c.innerHTML = '<p class="no-ann">No announcements at this time.</p>';
+      return;
+    }
+    c.innerHTML = anns.map(a =>
+      `<div class="ann-item"><span class="ann-bullet">◆</span><span>${a}</span></div>`
+    ).join('');
+  }
+
+  function convertTo24(t) {
+    if (!t) return null;
+    if (!t.includes(' ')) return t;
+    const [time, mod] = t.split(' ');
+    let [h, m] = time.split(':');
+    h = parseInt(h);
+    if (mod === 'PM' && h !== 12) h += 12;
+    if (mod === 'AM' && h === 12) h = 0;
+    return String(h).padStart(2,'0') + ':' + m;
+  }
+
+  function highlightNextPrayer(apiTimes, overrides) {
+    const names = ['fajr','dhuhr','asr','maghrib','isha'];
+    const now = new Date();
+    const currentMins = now.getHours() * 60 + now.getMinutes();
+    let nextIndex = -1;
+    for (let i = 0; i < names.length; i++) {
+      const t = overrides[names[i]] || apiTimes[names[i]];
+      if (!t) continue;
+      const t24 = convertTo24(t);
+      if (!t24) continue;
+      const [h, m] = t24.split(':').map(Number);
+      const pMins = h * 60 + m;
+      if (pMins > currentMins) { nextIndex = i; break; }
+    }
+    const rows = document.querySelectorAll('.prayer-row');
+    rows.forEach((row, i) => {
+      row.classList.remove('next-prayer');
+      const badge = row.querySelector('.next-badge');
+      if (badge) badge.remove();
+      if (i === nextIndex) {
+        row.classList.add('next-prayer');
+        const nameEl = row.querySelector('.p-name');
+        const b = document.createElement('span');
+        b.className = 'next-badge';
+        b.textContent = 'NEXT';
+        nameEl.appendChild(b);
+      }
+    });
+  }
+
+  async function fetchPrayerTimes(lat, lon) {
+    const stored = loadData();
+    const overrides = stored ? (stored.prayerOverride || {}) : {};
+    const names = ['fajr','dhuhr','asr','maghrib','isha'];
+    let apiTimes = {};
+
+    try {
+      const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`);
+      const data = await res.json();
+      const t = data.data.timings;
+      apiTimes = { fajr: t.Fajr, dhuhr: t.Dhuhr, asr: t.Asr, maghrib: t.Maghrib, isha: t.Isha };
+
+      const gDate = data.data.date.gregorian;
+      const hDate = data.data.date.hijri;
+      document.getElementById('date-box').innerHTML = `
+        <div class="greg">${gDate.weekday.en}, ${gDate.date}</div>
+        <div class="hijri">${hDate.date} ${hDate.month.en} ${hDate.year} AH</div>
+      `;
+    } catch(e) {
+      document.getElementById('date-box').innerHTML = '<div class="greg">Date unavailable</div>';
     }
 
-    // Initialize default view
-    switchRole();
-  </script>
+    names.forEach(n => {
+      const el = document.getElementById('t-' + n);
+      el.textContent = overrides[n] || apiTimes[n] || '--:--';
+    });
 
+    highlightNextPrayer(apiTimes, overrides);
+
+    const jummahTimes = stored ? (stored.jummahTimes || ['01:30 PM', '03:00 PM']) : ['01:30 PM', '03:00 PM'];
+    const anns = stored ? (stored.announcements || defaultAnns()) : defaultAnns();
+    renderJummah(jummahTimes);
+    renderAnns(anns);
+  }
+
+  function defaultAnns() {
+    return [
+      'Jummah Khutbah starts at 1:15 PM every Friday.',
+      'Quran classes for kids every Saturday at 10 AM.',
+      'Special Eid prayer will be announced soon.'
+    ];
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      p => fetchPrayerTimes(p.coords.latitude, p.coords.longitude),
+      () => fetchPrayerTimes(49.0134, 12.1016)
+    );
+  } else {
+    fetchPrayerTimes(49.0134, 12.1016);
+  }
+
+  // Auto-refresh every 60 seconds to pick up admin changes
+  setInterval(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        p => fetchPrayerTimes(p.coords.latitude, p.coords.longitude),
+        () => fetchPrayerTimes(49.0134, 12.1016)
+      );
+    } else {
+      fetchPrayerTimes(49.0134, 12.1016);
+    }
+  }, 60000);
+</script>
 </body>
 </html>
